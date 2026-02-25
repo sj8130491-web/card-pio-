@@ -1,106 +1,176 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Chapecó</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio Digital - Espetinho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; margin: 0; background: #f8f9fa; padding-bottom: 100px; }
-        header { background: #E91E63; color: white; padding: 15px; text-align: center; }
-        .container { padding: 15px; max-width: 600px; margin: auto; }
-        .titulo-cat { color: #E91E63; border-bottom: 2px solid #E91E63; margin: 25px 0 10px; font-weight: bold; text-transform: uppercase; }
-        .card { background: white; border-radius: 10px; padding: 12px; display: flex; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); align-items: center; }
-        .btn-add { background: #E91E63; color: white; border: none; padding: 8px; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; }
-        .barra { position: fixed; bottom: 0; width: 100%; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 20; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; color: #333; }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        :root {
+            --principal: #ff4500;
+            --fundo: #121212;
+            --card: #1e1e1e;
+            --texto: #ffffff;
+            --sucesso: #4cd137;
+        }
+
+        body {
+            background-color: var(--fundo);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--texto);
+            margin: 0;
+            padding-bottom: 100px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 3px solid var(--principal);
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; color: var(--principal); text-transform: uppercase; }
+        p.subtitulo { margin: 5px 0 0; opacity: 0.8; }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Estilo do Card */
+        .card {
+            background: var(--card);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: 0.3s;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .foto {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #252525;
+        }
+
+        .info { padding: 15px; }
+        .nome { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }
+        .preco { color: var(--sucesso); font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; display: block; }
+
+        .btn-add {
+            background: var(--principal);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Carrinho Flutuante */
+        .carrinho-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--sucesso);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
-    <header><h1>Delivery Chapecó</h1></header>
-    <div class="container" id="vitrine">Carregando...</div>
 
-    <div class="barra">
-        <span>Total: <strong id="t-barra">R$ 0,00</strong></span>
-        <button onclick="verCarrinho()" style="background:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold;">Finalizar Pedido</button>
+<header>
+    <h1>Espetinho do Chefe</h1>
+    <p class="subtitulo">O melhor churrasco de Chapecó</p>
+</header>
+
+<div class="container" id="lista-produtos">
     </div>
 
-    <div id="modal">
-        <div class="modal-content">
-            <h3>Finalizar Pedido</h3>
-            <div id="itens-carrinho"></div>
-            <hr>
-            <select id="metodo" onchange="calcTotal()">
-                <option value="0">Retirada no Local (Grátis)</option>
-                <option value="5">Entrega (Taxa R$ 5,00)</option>
-            </select>
-            <input type="text" id="nome_cli" placeholder="Seu Nome">
-            <input type="text" id="end" placeholder="Seu Endereço">
-            <h4>Total: <span id="t-modal">R$ 0,00</span></h4>
-            <button onclick="pedir()" style="width:100%; background:#25D366; color:white; padding:15px; border:none; border-radius:8px; font-weight:bold;">ENVIAR NO WHATSAPP</button>
-            <button onclick="document.getElementById('modal').style.display='none'" style="width:100%; border:none; background:none; color:red; margin-top:10px;">Voltar</button>
-        </div>
-    </div>
+<a href="#" class="carrinho-btn" onclick="enviarPedido()">
+    <i class="fab fa-whatsapp"></i> 
+    Finalizar Pedido (<span id="total-itens">0</span>)
+</a>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const firebaseConfig = { apiKey: "AIzaSyCcUswgeytDfSEmOphQU6fLUGBMwP1aFWM", authDomain: "delivery-chapeco.firebaseapp.com", projectId: "delivery-chapeco", storageBucket: "delivery-chapeco.firebasestorage.app", messagingSenderId: "936059632111", appId: "1:936059632111:web:ab4e8d6dd0874c141f1e1a" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
-        let cart = [];
+<script>
+    let carrinho = [];
+    let numeroWhats = ""; // Será preenchido pelo banco do Admin
 
-        onSnapshot(collection(db, "produtos"), (snap) => {
-            const vitrine = document.getElementById('vitrine'); vitrine.innerHTML = "";
-            const cats = {};
-            snap.forEach(doc => {
-                const p = doc.data();
-                if (!cats[p.categoria]) cats[p.categoria] = [];
-                cats[p.categoria].push(p);
-            });
-            for (let c in cats) {
-                vitrine.innerHTML += `<div class="titulo-cat">${c}</div>`;
-                cats[c].forEach(p => {
-                    // MUDANÇA AQUI: Agora chama apenas 'add' direto para todos
-                    vitrine.innerHTML += `<div class="card"><div style="flex:1"><strong>${p.nome}</strong><br><b style="color:green">R$ ${p.preco.toFixed(2)}</b><button class="btn-add" onclick="add('${p.nome}', ${p.preco})">+ ADICIONAR</button></div></div>`;
-                });
-            }
+    function carregarProdutos() {
+        const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+        numeroWhats = localStorage.getItem('whatsapp') || "49999999999";
+        const container = document.getElementById('lista-produtos');
+        
+        container.innerHTML = produtos.map((p, index) => `
+            <div class="card">
+                <img src="${p.imagem || 'https://via.placeholder.com/300x200?text=Espetinho'}" class="foto">
+                <div class="info">
+                    <span class="nome">${p.nome}</span>
+                    <span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                    <button class="btn-add" onclick="add(${index})">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function add(index) {
+        const produtos = JSON.parse(localStorage.getItem('produtos'));
+        carrinho.push(produtos[index]);
+        document.getElementById('total-itens').innerText = carrinho.length;
+        
+        // Efeito visual no botão
+        alert(produtos[index].nome + " adicionado!");
+    }
+
+    function enviarPedido() {
+        if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
+
+        let texto = "*Novo Pedido:*\n\n";
+        let total = 0;
+        
+        carrinho.forEach(item => {
+            texto += `• ${item.nome} - R$ ${item.preco}\n`;
+            total += parseFloat(item.preco);
         });
 
-        window.add = (n, p) => { cart.push({n, p}); calcTotal(); alert("Adicionado!"); };
+        texto += `\n*Total: R$ ${total.toFixed(2)}*`;
+        
+        const url = `https://wa.me/${numeroWhats}?text=${encodeURIComponent(texto)}`;
+        window.open(url, '_blank');
+    }
 
-        window.calcTotal = () => {
-            const taxa = parseFloat(document.getElementById('metodo').value);
-            const sub = cart.reduce((s, i) => s + i.p, 0);
-            document.getElementById('t-barra').innerText = `R$ ${(sub + taxa).toFixed(2)}`;
-            document.getElementById('t-modal').innerText = `R$ ${(sub + taxa).toFixed(2)}`;
-        };
+    window.onload = carregarProdutos;
+</script>
 
-        window.verCarrinho = () => {
-            if(cart.length === 0) return alert("Carrinho vazio!");
-            document.getElementById('itens-carrinho').innerHTML = cart.map(i => `<p>• ${i.n} - R$ ${i.p.toFixed(2)}</p>`).join('');
-            document.getElementById('modal').style.display = 'flex'; calcTotal();
-        };
-
-        window.pedir = () => {
-            const FONE = "49988821776"; // <--- COLOQUE SEU NÚMERO
-            const nomeCli = document.getElementById('nome_cli').value;
-            const end = document.getElementById('end').value;
-            if(!nomeCli || !end) return alert("Preencha Nome e Endereço!");
-
-            let txt = `*MARMITARIA DELIVERY*\n`;
-            txt += `📞 (49) 99999-9999\n`;
-            txt += `==============================\n`;
-            txt += `👤 *Cliente:* ${nomeCli}\n`;
-            txt += `📍 *Endereço:* ${end}\n`;
-            txt += `🛵 *Tipo:* ${document.getElementById('metodo').options[document.getElementById('metodo').selectedIndex].text}\n`;
-            txt += `==============================\n`;
-            cart.forEach(i => txt += `✅ ${i.n} - R$ ${i.p.toFixed(2)}\n`);
-            txt += `==============================\n`;
-            txt += `*TOTAL: ${document.getElementById('t-modal').innerText}*\n`;
-            txt += `==============================`;
-            
-            window.open(`https://wa.me/${FONE}?text=${encodeURIComponent(txt)}`);
-        };
-    </script>
 </body>
 </html>
