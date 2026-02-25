@@ -3,38 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Chapecó - Espetinhos</title>
+    <title>Delivery Chapecó</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --principal: #ff4500; --fundo: #121212; --card: #1e1e1e; --texto: #ffffff; --sucesso: #4cd137; }
-        body { background-color: var(--fundo); font-family: sans-serif; color: var(--texto); margin: 0; padding-bottom: 100px; text-align: center; }
-        header { padding: 40px; background: #000; border-bottom: 3px solid var(--principal); }
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #333; padding-bottom: 15px; }
-        .foto { width: 100%; height: 180px; object-fit: cover; background: #252525; }
-        .nome { font-size: 1.2rem; font-weight: bold; margin-top: 10px; display: block; }
-        .preco { color: var(--sucesso); font-size: 1.5rem; font-weight: bold; margin: 10px 0; display: block; }
-        .btn-add { background: var(--principal); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 90%; }
-        .carrinho-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--sucesso); color: #000; padding: 15px 30px; border-radius: 50px; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 10px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 80%; max-width: 300px; justify-content: center; }
+        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; padding-bottom: 100px; text-align: center; }
+        header { padding: 30px; background: #000; border-bottom: 3px solid #ff4500; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; max-width: 1000px; margin: auto; }
+        .card { background: #1e1e1e; border-radius: 10px; padding: 15px; border: 1px solid #333; }
+        .preco { color: #4cd137; font-size: 1.5rem; font-weight: bold; display: block; margin: 10px 0; }
+        .btn-add { background: #ff4500; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .carrinho-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #4cd137; color: black; padding: 15px 30px; border-radius: 50px; font-weight: bold; text-decoration: none; width: 250px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Delivery Chapecó</h1>
-    <p>Os Melhores Espetinhos da Região</p>
+    <p>Peça seu espetinho pelo WhatsApp</p>
 </header>
 
-<div class="container" id="lista-produtos"></div>
+<div class="container" id="lista"></div>
 
-<a href="#" class="carrinho-btn" onclick="enviarPedido()">
-    <i class="fab fa-whatsapp"></i> Finalizar Pedido (<span id="total-itens">0</span>)
+<a href="#" class="carrinho-btn" onclick="enviar()">
+    Finalizar Pedido (<span id="total">0</span>)
 </a>
 
 <script>
-    // COLOQUE SEU WHATSAPP AQUI
-    const SEU_WHATSAPP = "49999999999"; 
-
+    const whats = "5549999999999"; // COLOQUE SEU NÚMERO AQUI
     const produtos = [
         { nome: "Espetinho de Carne", preco: 10.00 },
         { nome: "Espetinho de Frango", preco: 9.00 },
@@ -44,40 +39,32 @@
 
     let carrinho = [];
 
-    function carregarProdutos() {
-        const container = document.getElementById('lista-produtos');
-        container.innerHTML = produtos.map((p, index) => `
+    function render() {
+        document.getElementById('lista').innerHTML = produtos.map((p, i) => `
             <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=Espetinho" class="foto">
-                <span class="nome">${p.nome}</span>
+                <h3>${p.nome}</h3>
                 <span class="preco">R$ ${p.preco.toFixed(2)}</span>
-                <button class="btn-add" onclick="add(${index})">ADICIONAR</button>
+                <button class="btn-add" onclick="add(${i})">ADICIONAR</button>
             </div>
         `).join('');
     }
 
-    function add(index) {
-        carrinho.push(produtos[index]);
-        document.getElementById('total-itens').innerText = carrinho.length;
+    function add(i) {
+        carrinho.push(produtos[i]);
+        document.getElementById('total').innerText = carrinho.length;
     }
 
-    function enviarPedido() {
-        if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
-        let texto = "*Novo Pedido Delivery Chapecó:*\n\n";
-        let total = 0;
-        carrinho.forEach(item => {
-            texto += `• ${item.nome} - R$ ${item.preco.toFixed(2)}\n`;
-            total += item.preco;
-        });
-        texto += `\n*Total: R$ ${total.toFixed(2)}*`;
-        window.open(`https://wa.me/${SEU_WHATSAPP}?text=${encodeURIComponent(texto)}`, '_blank');
+    function enviar() {
+        if (carrinho.length === 0) return alert("Carrinho vazio!");
+        let msg = "Novo Pedido:\n" + carrinho.map(item => "- " + item.nome).join("\n");
+        window.open("https://wa.me/" + whats + "?text=" + encodeURIComponent(msg));
     }
 
-    window.onload = carregarProdutos;
+    render();
 </script>
-
 </body>
 </html>
+
 
 
 
