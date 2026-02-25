@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"><title>ADMIN - Delivery</title>
+    <style>
+        body { font-family: sans-serif; background: #2c3e50; color: white; text-align: center; padding: 20px; }
+        .box { background: #fff; color: #333; padding: 20px; border-radius: 12px; max-width: 450px; margin: auto; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background: #E91E63; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .item-lista { background: #eee; padding: 10px; margin-top: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; color: #000; }
+        @media print { .no-print { display: none; } body { background: white; color: black; } .box { box-shadow: none; border: 1px solid #000; } }
+    </style>
+</head>
+<body>
+    <h1 class="no-print">SISTEMA DE GESTÃO</h1>
+    
+    <div class="box">
+        <h2 class="no-print">Cadastrar Produtos</h2>
+        <div class="no-print">
+            <input type="text" id="nome" placeholder="Nome">
+            <input type="number" id="preco" placeholder="Preço">
+            <select id="cat">
+                <option value="Marmitas">Marmitas</option>
+                <option value="Espetinhos">Espetinhos</option>
+                <option value="Bebidas">Bebidas</option>
+            </select>
+            <button id="btnSalvar">SALVAR NO SITE</button>
+        </div>
+
+        <hr class="no-print">
+        
+        <h3>Itens no Cardápio</h3>
+        <div id="lista"></div>
+        
+        <button onclick="window.print()" class="no-print" style="background: #2196F3; margin-top: 20px;">IMPRIMIR LISTA ATUAL</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const firebaseConfig = { apiKey: "AIzaSyCcUswgeytDfSEmOphQU6fLUGBMwP1aFWM", authDomain: "delivery-chapeco.firebaseapp.com", projectId: "delivery-chapeco", storageBucket: "delivery-chapeco.firebasestorage.app", messagingSenderId: "936059632111", appId: "1:936059632111:web:ab4e8d6dd0874c141f1e1a" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+
+        document.getElementById('btnSalvar').onclick = async () => {
+            const nome = document.getElementById('nome').value;
+            const preco = document.getElementById('preco').value;
+            if(!nome || !preco) return alert("Preencha Nome e Preço!");
+            await addDoc(collection(db, "produtos"), { nome, preco: parseFloat(preco), categoria: document.getElementById('cat').value });
+            alert("Salvo!");
+        };
+
+        onSnapshot(collection(db, "produtos"), (snap) => {
+            const lista = document.getElementById('lista'); lista.innerHTML = "";
+            snap.forEach(d => {
+                lista.innerHTML += `<div class="item-lista"><span>${d.data().nome}</span> <button class="no-print" style="background:red; width:auto; padding:5px;" onclick="apagar('${d.id}')">X</button></div>`;
+            });
+        });
+        window.apagar = async (id) => { if(confirm("Remover?")) await deleteDoc(doc(db, "produtos", id)); };
+    </script>
+</body>
+</html>
