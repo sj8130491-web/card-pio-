@@ -25,13 +25,13 @@
         header {
             text-align: center;
             padding: 40px 20px;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80');
             background-size: cover;
             background-position: center;
             border-bottom: 3px solid var(--principal);
         }
 
-        h1 { margin: 0; font-size: 2.5rem; color: var(--principal); text-transform: uppercase; }
+        h1 { margin: 0; font-size: 2.2rem; color: var(--principal); text-transform: uppercase; }
         p.subtitulo { margin: 5px 0 0; opacity: 0.8; }
 
         .container {
@@ -43,7 +43,6 @@
             gap: 20px;
         }
 
-        /* Estilo do Card */
         .card {
             background: var(--card);
             border-radius: 15px;
@@ -51,8 +50,6 @@
             border: 1px solid #333;
             transition: 0.3s;
         }
-
-        .card:hover { transform: translateY(-5px); }
 
         .foto {
             width: 100%;
@@ -62,7 +59,7 @@
         }
 
         .info { padding: 15px; }
-        .nome { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }
+        .nome { font-size: 1.3rem; font-weight: bold; display: block; margin-bottom: 5px; }
         .preco { color: var(--sucesso); font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; display: block; }
 
         .btn-add {
@@ -74,14 +71,12 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
 
-        /* Carrinho Flutuante */
         .carrinho-btn {
             position: fixed;
             bottom: 20px;
@@ -98,10 +93,9 @@
             align-items: center;
             gap: 10px;
             z-index: 1000;
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
+            width: 80%;
+            max-width: 300px;
+            justify-content: center;
         }
     </style>
 </head>
@@ -109,32 +103,38 @@
 
 <header>
     <h1>Espetinho do Chefe</h1>
-    <p class="subtitulo">O melhor churrasco de Chapecó</p>
+    <p class="subtitulo">Qualidade e Sabor em Chapecó</p>
 </header>
 
-<div class="container" id="lista-produtos">
-    </div>
+<div class="container" id="lista-produtos"></div>
 
 <a href="#" class="carrinho-btn" onclick="enviarPedido()">
     <i class="fab fa-whatsapp"></i> 
-    Finalizar Pedido (<span id="total-itens">0</span>)
+    Pedir Agora (<span id="total-itens">0</span>)
 </a>
 
 <script>
+    // --- 1. CONFIGURAÇÃO: COLOQUE SEU WHATSAPP AQUI (SÓ NÚMEROS) ---
+    const SEU_WHATSAPP = "49988821776"; 
+
+    // --- 2. LISTA DE PRODUTOS: ADICIONE OU MUDE AQUI ---
+    const produtos = [
+        { nome: "Espetinho de Carne", preco: 10.00, imagem: "carne.jpg" },
+        { nome: "Espetinho de Frango", preco: 8.50, imagem: "frango.jpg" },
+        { nome: "Coração de Frango", preco: 12.00, imagem: "coracao.jpg" },
+        { nome: "Pão de Alho", preco: 7.00, imagem: "paodealho.jpg" }
+    ];
+
     let carrinho = [];
-    let numeroWhats = ""; // Será preenchido pelo banco do Admin
 
     function carregarProdutos() {
-        const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-        numeroWhats = localStorage.getItem('whatsapp') || "49999999999";
         const container = document.getElementById('lista-produtos');
-        
         container.innerHTML = produtos.map((p, index) => `
             <div class="card">
-                <img src="${p.imagem || 'https://via.placeholder.com/300x200?text=Espetinho'}" class="foto">
+                <img src="${p.imagem}" onerror="this.src='https://via.placeholder.com/300x200?text=Espetinho'" class="foto">
                 <div class="info">
                     <span class="nome">${p.nome}</span>
-                    <span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                    <span class="preco">R$ ${p.preco.toFixed(2)}</span>
                     <button class="btn-add" onclick="add(${index})">
                         <i class="fas fa-plus"></i> Adicionar
                     </button>
@@ -144,12 +144,9 @@
     }
 
     function add(index) {
-        const produtos = JSON.parse(localStorage.getItem('produtos'));
         carrinho.push(produtos[index]);
         document.getElementById('total-itens').innerText = carrinho.length;
-        
-        // Efeito visual no botão
-        alert(produtos[index].nome + " adicionado!");
+        alert(produtos[index].nome + " foi para o carrinho!");
     }
 
     function enviarPedido() {
@@ -159,13 +156,13 @@
         let total = 0;
         
         carrinho.forEach(item => {
-            texto += `• ${item.nome} - R$ ${item.preco}\n`;
-            total += parseFloat(item.preco);
+            texto += `• ${item.nome} - R$ ${item.preco.toFixed(2)}\n`;
+            total += item.preco;
         });
 
         texto += `\n*Total: R$ ${total.toFixed(2)}*`;
         
-        const url = `https://wa.me/${numeroWhats}?text=${encodeURIComponent(texto)}`;
+        const url = `https://wa.me/${SEU_WHATSAPP}?text=${encodeURIComponent(texto)}`;
         window.open(url, '_blank');
     }
 
@@ -174,3 +171,4 @@
 
 </body>
 </html>
+
