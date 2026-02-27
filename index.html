@@ -3,39 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Chapecó</title>
+    <title>Delivery Chapecó | Cardápio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; padding-bottom: 100px; text-align: center; }
-        header { padding: 30px; background: #000; border-bottom: 3px solid #ff4500; }
-        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px; max-width: 1000px; margin: auto; }
-        .card { background: #1e1e1e; border-radius: 10px; padding: 15px; border: 1px solid #333; }
-        .preco { color: #4cd137; font-size: 1.5rem; font-weight: bold; display: block; margin: 10px 0; }
-        .btn-add { background: #ff4500; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .carrinho-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #4cd137; color: black; padding: 15px 30px; border-radius: 50px; font-weight: bold; text-decoration: none; width: 250px; }
+        :root {
+            --primary: #ff4500;
+            --primary-hover: #e63e00;
+            --success: #2ecc71;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+        }
+
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 120px; 
+        }
+
+        header { 
+            padding: 40px 20px; 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 3px solid var(--primary); 
+            text-align: center;
+        }
+
+        header h1 { margin: 0; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
+        header p { color: var(--primary); font-weight: 600; margin-top: 5px; }
+
+        .container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            padding: 30px 20px; 
+            max-width: 1100px; 
+            margin: auto; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 15px; 
+            padding: 20px; 
+            border: 1px solid #333; 
+            text-align: left;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card h3 { margin: 0; font-size: 1.2rem; color: var(--text); }
+
+        .preco { 
+            color: var(--primary); 
+            font-size: 1.4rem; 
+            font-weight: 800; 
+            display: block; 
+            margin: 15px 0; 
+        }
+
+        .btn-add { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            width: 100%; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-add:hover { background: var(--primary-hover); }
+        .btn-add:active { transform: scale(0.98); }
+
+        .carrinho-btn { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--success); 
+            color: white; 
+            padding: 18px 30px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            text-decoration: none; 
+            width: 280px; 
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transition: 0.3s;
+        }
+
+        .carrinho-btn:hover { transform: translateX(-50%) translateY(-3px); filter: brightness(1.1); }
+
+        .badge {
+            background: white;
+            color: var(--success);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Delivery Chapecó</h1>
-    <p>Peça seu espetinho pelo WhatsApp</p>
+    <h1>🔥 Delivery Chapecó</h1>
+    <p>O melhor espetinho da região</p>
 </header>
 
 <div class="container" id="lista"></div>
 
 <a href="#" class="carrinho-btn" onclick="enviar()">
-    Finalizar Pedido (<span id="total">0</span>)
+    <span><i class="fa fa-shopping-cart"></i> Finalizar Pedido</span>
+    <span class="badge" id="total">0</span>
 </a>
 
 <script>
-    const whats = "5549999999999"; // COLOQUE SEU NÚMERO AQUI
-    const produtos = [
+    // Tenta pegar o número do WhatsApp salvo no admin, senão usa o padrão
+    const whats = localStorage.getItem('whatsapp') || "5549999999999"; 
+    
+    // Tenta pegar os produtos cadastrados no admin, senão usa os padrões abaixo
+    const produtosPadrao = [
         { nome: "Espetinho de Carne", preco: 10.00 },
         { nome: "Espetinho de Frango", preco: 9.00 },
         { nome: "Coração de Frango", preco: 12.00 },
         { nome: "Pão de Alho", preco: 8.00 }
     ];
+
+    const produtos = JSON.parse(localStorage.getItem('produtos')) || produtosPadrao;
 
     let carrinho = [];
 
@@ -43,8 +157,10 @@
         document.getElementById('lista').innerHTML = produtos.map((p, i) => `
             <div class="card">
                 <h3>${p.nome}</h3>
-                <span class="preco">R$ ${p.preco.toFixed(2)}</span>
-                <button class="btn-add" onclick="add(${i})">ADICIONAR</button>
+                <span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                <button class="btn-add" onclick="add(${i})">
+                    <i class="fa fa-plus"></i> ADICIONAR
+                </button>
             </div>
         `).join('');
     }
@@ -52,11 +168,23 @@
     function add(i) {
         carrinho.push(produtos[i]);
         document.getElementById('total').innerText = carrinho.length;
+        
+        // Pequeno efeito visual no botão de finalizar
+        const btn = document.querySelector('.carrinho-btn');
+        btn.style.transform = 'translateX(-50%) scale(1.05)';
+        setTimeout(() => btn.style.transform = 'translateX(-50%) scale(1)', 200);
     }
 
     function enviar() {
-        if (carrinho.length === 0) return alert("Carrinho vazio!");
-        let msg = "Novo Pedido:\n" + carrinho.map(item => "- " + item.nome).join("\n");
+        if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
+        
+        let totalPedido = carrinho.reduce((acc, item) => acc + parseFloat(item.preco), 0);
+        let msg = "*Novo Pedido - Delivery Chapecó*\n";
+        msg += "------------------------------\n";
+        msg += carrinho.map(item => "✅ " + item.nome + " - R$ " + parseFloat(item.preco).toFixed(2)).join("\n");
+        msg += "\n------------------------------";
+        msg += "\n*Total: R$ " + totalPedido.toFixed(2) + "*";
+        
         window.open("https://wa.me/" + whats + "?text=" + encodeURIComponent(msg));
     }
 
@@ -64,6 +192,7 @@
 </script>
 </body>
 </html>
+
 
 
 
