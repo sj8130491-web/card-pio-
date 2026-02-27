@@ -1,44 +1,181 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo</title>
+    <title>Painel Administrativo | Cardápio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #121212; color: white; font-family: sans-serif; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; border: 1px solid #ff4500; }
-        h2 { color: #ff4500; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #ff4500; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .produto-item { background: #333; padding: 10px; margin-top: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-excluir { background: #ff3e3e; width: auto; padding: 5px 10px; }
+        :root {
+            --primary: #ff4500;
+            --primary-hover: #e63e00;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+            --danger: #ff3e3e;
+            --input-bg: #2a2a2a;
+        }
+
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { 
+            max-width: 500px; 
+            margin: 40px auto; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { 
+            color: var(--primary); 
+            text-align: center; 
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            margin: 8px 0 20px 0; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            background: var(--input-bg);
+            color: white;
+            box-sizing: border-box; 
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.2);
+        }
+
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .lista-container {
+            margin-top: 30px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .produto-item { 
+            background: #252525; 
+            padding: 15px; 
+            margin-top: 10px; 
+            border-radius: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-left: 4px solid var(--primary);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .produto-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produto-nome { font-weight: 600; }
+        .produto-preco { color: var(--primary); font-size: 0.9rem; }
+
+        .btn-excluir { 
+            background: var(--danger); 
+            width: auto; 
+            padding: 8px 12px; 
+            font-size: 0.8rem;
+        }
+
+        .btn-excluir:hover { background: #d32f2f; }
+
+        hr { border: 0; height: 1px; background: #333; margin: 30px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Configurar Cardápio</h2>
+    <h2><span style="font-size: 1.2rem;">⚙️</span> Configurar Cardápio</h2>
     
-    <label>WhatsApp (com DDD, só números):</label>
+    <label>WhatsApp (com DDD):</label>
     <input type="text" id="whats" placeholder="Ex: 49991234567">
     <button onclick="salvarWhats()">Salvar WhatsApp</button>
 
-    <hr style="margin: 20px 0; border: 0.5px solid #333;">
+    <hr>
 
     <h2>Adicionar Produto</h2>
-    <input type="text" id="nome" placeholder="Nome do Espetinho">
-    <input type="number" id="preco" placeholder="Preço (Ex: 10.00)">
-    <input type="text" id="imagem" placeholder="Nome da imagem (ex: carne.jpg)">
+    
+    <label>Nome do Produto:</label>
+    <input type="text" id="nome" placeholder="Ex: Espetinho de Carne">
+    
+    <label>Preço (R$):</label>
+    <input type="number" id="preco" placeholder="Ex: 10.00">
+    
+    <label>Nome da imagem:</label>
+    <input type="text" id="imagem" placeholder="ex: carne.jpg">
+    
     <button onclick="addProduto()">Adicionar ao Cardápio</button>
 
-    <div id="lista-admin"></div>
+    <div id="lista-admin" class="lista-container"></div>
 </div>
 
 <script>
+    // Mantive sua lógica funcional, apenas melhorei a renderização visual
     function salvarWhats() {
         const num = document.getElementById('whats').value;
         localStorage.setItem('whatsapp', num);
-        alert("WhatsApp salvo com sucesso!");
+        alert("✅ WhatsApp salvo com sucesso!");
     }
 
     function addProduto() {
@@ -52,6 +189,7 @@
         produtos.push({ nome, preco, imagem });
         localStorage.setItem('produtos', JSON.stringify(produtos));
         
+        // Limpar campos
         document.getElementById('nome').value = '';
         document.getElementById('preco').value = '';
         document.getElementById('imagem').value = '';
@@ -62,19 +200,30 @@
     function renderLista() {
         const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
         const lista = document.getElementById('lista-admin');
+        
+        if(produtos.length === 0) {
+            lista.innerHTML = '<h3>Nenhum produto cadastrado.</h3>';
+            return;
+        }
+
         lista.innerHTML = '<h3>Seus Produtos:</h3>' + produtos.map((p, i) => `
             <div class="produto-item">
-                <span>${p.nome} - R$ ${p.preco}</span>
-                <button class="btn-excluir" onclick="remover(${i})">X</button>
+                <div class="produto-info">
+                    <span class="produto-nome">${p.nome}</span>
+                    <span class="produto-preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                </div>
+                <button class="btn-excluir" onclick="remover(${i})">Excluir</button>
             </div>
         `).join('');
     }
 
     function remover(i) {
-        const produtos = JSON.parse(localStorage.getItem('produtos'));
-        produtos.splice(i, 1);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        renderLista();
+        if(confirm("Deseja remover este item?")) {
+            const produtos = JSON.parse(localStorage.getItem('produtos'));
+            produtos.splice(i, 1);
+            localStorage.setItem('produtos', JSON.stringify(produtos));
+            renderLista();
+        }
     }
 
     window.onload = () => {
